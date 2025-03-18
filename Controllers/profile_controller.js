@@ -1,6 +1,5 @@
 const express = require("express");
 const m = require('mongoose')
-const { _IMG_UPLOADER } = require("./file_uploads")
 const User = require("../Models/Users");
 const Likes = require("../Models/Likes");
 const Follow = require('../Models/Follow');

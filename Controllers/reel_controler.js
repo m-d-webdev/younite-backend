@@ -6,11 +6,12 @@ const Likes = require("../Models/Likes")
 const Comments = require("../Models/Comments")
 
 const { _REEL_UPLOADER } = require("./file_uploads");
+const { UPLOAD_FILE_TO_S3 } = require("../config/s3");
 const Create_reel = async (req, res) => {
     try {
         const { userId, description } = req.body
-        const url = await _REEL_UPLOADER(req.files.video)
-
+        const url = await UPLOAD_FILE_TO_S3({ file: req.files.video, folderName: "reels" })
+        
         const reel = await Reel.create({
             authorId: userId,
             description,

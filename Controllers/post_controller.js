@@ -3,7 +3,7 @@ const Post = require('../Models/Posts');
 const User = require('../Models/Users');
 const Likes = require("../Models/Likes")
 const Comments = require("../Models/Comments")
-const { _IMG_UPLOADER } = require("./file_uploads");
+const { UPLOAD_FILE_TO_S3 } = require("../config/s3");
 const Create_post = async (req, res) => {
     try {
         const { content, userId, title } = req.body;
@@ -14,14 +14,16 @@ const Create_post = async (req, res) => {
         if (Array.isArray(images)) {
             if (images.length > 0) {
                 for await (const element of images) {
-                    const url = await _IMG_UPLOADER(element);
+                    const url = await UPLOAD_FILE_TO_S3({ file: element, folderName :"posts_images"});
                     array_imgs.push(url);
                 }
             }
         } else {
-            const url = await _IMG_UPLOADER(images);
+            const url = await UPLOAD_FILE_TO_S3({ file: images, folderName :"posts_images"});
             array_imgs.push(url);
-        }
+            console.log((url));
+            
+        }   
 
         const post_req = await Post.create({ title, content, image: array_imgs, authorId: userId });
         return res.status(200).json({

@@ -1,8 +1,8 @@
 const Moment = require("../Models/Moments")
 const Follows = require("../Models/Follow")
 const Users = require("../Models/Users")
-const { _IMG_UPLOADER, _MOMENT_VIDEO_UPLOADER } = require("../Controllers/file_uploads")
 const { Put_notification } = require("./Notification_controller")
+const { UPLOAD_FILE_TO_S3 } = require("../config/s3")
 
 const CreateMoment = async (req, res) => {
     try {
@@ -17,13 +17,12 @@ const CreateMoment = async (req, res) => {
                     content
                 })
                 // Put_notification(userId, [], 'new', res_crea._id, "moment")
-
                 res.status(200).json({ message: "Text moment has been successfully saved", moment: res_crea })
                 break;
             case "image":
                 const { file } = req.files
                 if (!file) return res.status(400).send("no FIles on the request ! ")
-                const url = await _IMG_UPLOADER(file)
+                const url = await UPLOAD_FILE_TO_S3({ file, folderName: "moments_media/imgs" })
                 if (url) {
                     const res_crea = await Moment.create({
                         authorId: userId,
@@ -37,10 +36,11 @@ const CreateMoment = async (req, res) => {
                     res.status(500).json({ message: "Failed tp save your moment image " })
                 }
                 break;
+                
             case "video":
                 const videofile = req.files.file
                 if (!videofile) return res.status(400).send("no FIles on the request ! ")
-                const url_video = await _MOMENT_VIDEO_UPLOADER(videofile);
+                const url_video = await UPLOAD_FILE_TO_S3({ file: videofile, folderName: "moments_media/videos" });
                 if (url_video) {
                     const res_crea = await Moment.create({
                         authorId: userId,

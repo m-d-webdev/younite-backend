@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt")
 const UserModel = require("../Models/Users")
 const jwt = require('jsonwebtoken')
 const path = require("path");
-const { _IMG_UPLOADER } = require("./file_uploads")
 const Likes = require("../Models/Likes");
 const Follow = require('../Models/Follow');
 const Moment = require('../Models/Moments')
@@ -17,6 +16,7 @@ const UserContacts = require("../Models/UserContacts");
 const NotificationModel = require("../Models/Notification")
 const { Add_message } = require("./Messages_controller");
 const Blockes = require("../Models/Blockes");
+const { UPLOAD_FILE_TO_S3 } = require("../config/s3");
 
 
 
@@ -60,7 +60,6 @@ const StoreNewUser = async (req, res) => {
         let user = await UserModel.create({ FirstName, LastName, BirthDay: `${year}-${month}-${day}`, email, password })
         await Follow.create({ user_id: user._id });
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
-        // Put_notification(user._id, ["*"], "joined");
 
         return res.redirect(`http://localhost:3000/?_access_token=${token}`)
     } catch (error) {
@@ -80,7 +79,9 @@ const Update_profile_picture = async (req, res) => {
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({ message: 'No files were uploaded.' });
         }
-        const url = await _IMG_UPLOADER(req.files.profile_pic)
+
+        const url = await UPLOAD_FILE_TO_S3({ file: req.files.profile_pic, folderName: "profile_pics" })
+        if (!url) return res.status(500).json({ message: 'Failed to update your profile picture on the database ' });
         const update_db = await UserModel.updateOne({ "_id": req.body.userId }, { $set: { profile_img: url } })
         if (update_db.modifiedCount == 1) {
             return res.status(200).json({ message: 'Img Saved successfully ', img_url: url });
@@ -177,10 +178,9 @@ const add_to_contact = async (req, res) => {
                 $addToSet: {
                     contacts: contactId
                 }
-            },
-            {
-                upsert: true
-            }
+            }, {
+            upsert: true
+        }
         )
         await NotificationModel.deleteOne({ senderId: contactId, recipients: userId, type: "new-contact-req" })
         Put_notification(userId, [contactId], 'new-contact');
