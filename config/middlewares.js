@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-
+const FRONTEND_URL = process.env.FRONTEND_URL
 
 const auth_token = (req, res, next) => {
     const authorization = req.headers.authorization;
@@ -28,7 +28,7 @@ const guest = async (req, res, next) => {
         if (err) {
             return next();
         } else {
-            return res.redirect('http://localhost:3000/');
+            return res.redirect(FRONTEND_URL);
         }
     })
 }

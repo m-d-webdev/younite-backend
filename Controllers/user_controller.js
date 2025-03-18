@@ -26,6 +26,7 @@ const FilterIds = (main = [], ids = []) => {
 }
 
 
+const FRONTEND_URL = process.env.FRONTEND_URL
 
 
 const Login_user = async (req, res) => {
@@ -40,7 +41,7 @@ const Login_user = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password)
         if (isMatch) {
             const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
-            res.redirect(`http://localhost:3000/?_access_token=${token}`);
+            res.redirect(`${FRONTEND_URL}/?_access_token=${token}`);
         } else {
             req.session.error_login = "Login error: Check your credentialsl";
             req.session.email = email;
@@ -61,7 +62,7 @@ const StoreNewUser = async (req, res) => {
         await Follow.create({ user_id: user._id });
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
 
-        return res.redirect(`http://localhost:3000/?_access_token=${token}`)
+        return res.redirect(`${FRONTEND_URL}/?_access_token=${token}`)
     } catch (error) {
         req.session.FirstName = req.body.FirstName;
         req.session.LastName = req.body.LastName;
