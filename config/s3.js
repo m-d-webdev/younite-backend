@@ -20,7 +20,7 @@ const s3 = new S3Client({
 
 
 
-export const UPLOAD_FILE_TO_S3 = ({ file, folderName = "" }) => {
+const UPLOAD_FILE_TO_S3 = ({ file, folderName = "" }) => {
     return new Promise(
         async (resolve, reject) => {
             try {
@@ -48,7 +48,7 @@ export const UPLOAD_FILE_TO_S3 = ({ file, folderName = "" }) => {
 
 
 
-export const GET_FILE_URL_FROM_S3 = ({ key }) => {
+const GET_FILE_URL_FROM_S3 = ({ key }) => {
     return new Promise(
         async (resolve, reject) => {
             try {
@@ -69,3 +69,4 @@ export const GET_FILE_URL_FROM_S3 = ({ key }) => {
 
 
 
+module.exports = { UPLOAD_FILE_TO_S3, GET_FILE_URL_FROM_S3 }
