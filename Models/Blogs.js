@@ -30,6 +30,7 @@ const BlogSchema = mongoose.Schema({
     }
 );
 
+
 BlogSchema.index({ title: "text", content: "text" });
 BlogSchema.index({ tags: 1 });
 const blogsModel = mongoose.model("Blogs", BlogSchema)

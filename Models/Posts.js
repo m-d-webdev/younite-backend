@@ -65,8 +65,14 @@ const Posts = mongoose.model('Posts', postSchema);
 
 
 async function createIndex() {
-  await Posts.createIndexes();
-  console.log("Posts : Indexes created successfully!");
+  try {
+    await Posts.createIndexes();
+    console.log("Posts : Indexes created successfully!");  
+  } catch (error) {
+    console.log("Posts : Failed to create indexes ");  
+    
+  }
+  
 }
 
 

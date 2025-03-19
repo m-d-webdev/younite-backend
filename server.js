@@ -5,7 +5,6 @@ require('dotenv').config();
 const session = require("express-session");
 const fileUpload = require("express-fileupload")
 const path = require("path");
-const fs = require('fs')
 const http = require("http");
 const { Server } = require('socket.io')
 
@@ -27,9 +26,9 @@ connect_to_db();
 // ----------
 
 const server = http.createServer(app);
-const FRONTEND_URL =process.env.FRONTEND_URL
+const FRONTEND_URL = process.env.FRONTEND_URL
 const io = new Server(server, {
-    cors:  ["http://localhost:3000" ,FRONTEND_URL]
+    cors: ["http://localhost:3000", FRONTEND_URL]
 });
 
 
@@ -37,7 +36,7 @@ io.on('connection', (socket) => socketEvents(socket, io))
 
 // -----------  --
 app.use(cors({
-    origin: ["http://localhost:3000" ,FRONTEND_URL],
+    origin: ["http://localhost:3000", FRONTEND_URL],
     methods: ["GET", "POST"],
     credentials: true
 }))
@@ -81,6 +80,7 @@ app.use("/interaction", require('./routes/interaction_routes'))
 app.use("/moments", require('./routes/moments_routes'))
 app.use("/profile", require('./routes/profile_routes'))
 app.use("/shares", require('./routes/shares_routes'))
+app.use("/social_action", require('./routes/SocialUser_routes'))
 
 // -----------
 app.get('/search/', getSearch)

@@ -49,7 +49,11 @@ const Login_user = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        const { email } = req.body;
+        console.log(error);
+        req.session.error_login = "Login error: Check your credentialsl";
+        req.session.email = email;
+        res.redirect(`/login`);
     }
 }
 
@@ -93,9 +97,9 @@ const Update_profile_picture = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
 
-        return res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error })
     }
 }
 
