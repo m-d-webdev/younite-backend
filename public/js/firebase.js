@@ -1,22 +1,50 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, getRedirectResult, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-// import {signInWithPopup} from "firebase/auth"
-const firebaseConfig = {
-    apiKey: "AIzaSyC54KldshIKgg_pUAjMvhcAfqhtgS8UE9I",
-    authDomain: "younite-frb.firebaseapp.com",
-    projectId: "younite-frb",
-    storageBucket: "younite-frb.firebasestorage.app",
-    messagingSenderId: "449672533697",
-    appId: "1:449672533697:web:db05e368b1d92447866640",
-    measurementId: "G-BYS23CQNXM"
+
+
+
+let auth;
+
+
+const GetConfigFromBack = async () => {
+    await fetch("/social_action/get_firebase_keys").then(res => res.json()).then(res => {
+        
+        
+        const {
+            FIREBASE_apiKey,
+            FIREBASE_authDomain,
+            FIREBASE_projectId,
+            FIREBASE_storageBucket,
+            FIREBASE_messagingSenderId,
+            FIREBASE_appId,
+            FIREBASE_measurementId
+        } = res.keys
+
+        const firebaseConfig = {
+            apiKey: FIREBASE_apiKey,
+            authDomain: FIREBASE_authDomain,
+            projectId: FIREBASE_projectId,
+            storageBucket: FIREBASE_storageBucket,
+            messagingSenderId: FIREBASE_messagingSenderId,
+            appId: FIREBASE_appId,
+            measurementId: FIREBASE_measurementId
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+    })
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+GetConfigFromBack()
 
-const auth = getAuth(app);
+
+// Initialize Firebase
+
+
+
 const g_provider = new GoogleAuthProvider();
+
 
 // // // -------------------
 
@@ -42,14 +70,11 @@ if (BtnSignWithGoole) BtnSignWithGoole.onclick = async () => {
 const BtnLoginWithGoole = document.getElementById("btn_login_with_gog");
 
 if (BtnLoginWithGoole) BtnLoginWithGoole.onclick = async () => {
-    console.log('test');
 
     let res = await signInWithPopup(auth, g_provider);
     if (res.user) {
-        console.log(res);
 
         const { email } = res.user;
-
         SendToAuthUser(email);
     }
 }
@@ -77,7 +102,7 @@ const SendToAuthUser = async (email) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({email})
+        body: JSON.stringify({ email })
     }).then(res => res.json()).then(res => {
         console.log(res);
         ValidateResponse(res)
