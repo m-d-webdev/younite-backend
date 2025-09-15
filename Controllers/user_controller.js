@@ -60,8 +60,12 @@ const Login_user = async (req, res) => {
 
 const StoreNewUser = async (req, res) => {
     try {
-
         const { FirstName, LastName, day, month, year, email, password } = req.body
+        const userAlreadyEx = await UserModel.findOne({ email })
+        if (userAlreadyEx) {
+            return res.status(400).json({ userAlreadyExists: true,userAlreadyEx })
+        }
+
         let user = await UserModel.create({ FirstName, LastName, BirthDay: `${year}-${month}-${day}`, email, password })
         await Follow.create({ user_id: user._id });
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
